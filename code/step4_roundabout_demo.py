@@ -6,7 +6,7 @@ from matplotlib.patches import Circle, Rectangle
 from round_core import run_roundabout_sim, ARM_COLORS
 
 
-def draw_base_roads(ax, radius=15.0, extent=105.0, road_width=10.0):
+def draw_base_roads(ax, radius=15.0, extent=105.0, road_width=14.0):
     ax.add_patch(Rectangle((-extent, -extent), 2 * extent, 2 * extent,
                            facecolor="#cfe7c4", edgecolor="none", zorder=0))
     ax.add_patch(Rectangle((-extent, -road_width / 2), 2 * extent, road_width,
@@ -52,7 +52,7 @@ def main():
 
     draw_base_roads(ax, radius=radius, extent=extent)
 
-    lane_offset = 2.5
+    lane_offset = 3.0
     if snap["cars"]:
         xs, ys, cs = [], [], []
         for c in snap["cars"]:
