@@ -6,9 +6,9 @@ from dataclasses import dataclass, field
 class Vehicle:
     s: float
     vel: float = 0.0
-    v_target: float = 15.0
+    v_target: float = 11.0
     relax: float = 2.0
-    sigma: float = 15.0
+    sigma: float = 7.0
     born: float = 0.0
 
 
@@ -51,7 +51,7 @@ class OpenBlocker:
 
 
 class Lane:
-    def __init__(self, signal=None, entry_s=-200.0, exit_s=200.0, min_gap=25.0):
+    def __init__(self, signal=None, entry_s=-95.0, exit_s=65.0, min_gap=10.0):
         self.signal = signal
         self.entry_s = entry_s
         self.exit_s = exit_s
@@ -83,8 +83,8 @@ class Lane:
         return [v.s for v in self.queue]
 
 
-def run_lights(rate_h, rate_v, T=300.0, dt=0.01, period=20.0,
-               entry_s=-200.0, exit_s=200.0, seed=0):
+def run_lights(rate_h, rate_v, T=300.0, dt=0.05, period=20.0,
+               entry_s=-95.0, exit_s=65.0, seed=0):
     random.seed(seed)
     sig_h = Signal(loc=0.0, period=period, offset=0.0)
     sig_v = Signal(loc=0.0, period=period, offset=period / 2)

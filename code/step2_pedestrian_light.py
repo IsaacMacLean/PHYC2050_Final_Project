@@ -56,7 +56,7 @@ def main():
     axes[1].set_title(f"Snapshot at t = {times[-1]:.1f} s, light = {'red' if is_red else 'green'}")
 
     plt.tight_layout()
-    plt.savefig("fig_step2_pedestrian_light.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_step2_pedestrian_light.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

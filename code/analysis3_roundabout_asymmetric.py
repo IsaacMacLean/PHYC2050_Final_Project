@@ -32,7 +32,7 @@ def main():
     ax.plot(rates_v, rates_h, color="cyan", ls=":", label="symmetric line")
     ax.legend()
     plt.tight_layout()
-    plt.savefig("fig_analysis3_roundabout_asymmetric.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_analysis3_roundabout_asymmetric.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

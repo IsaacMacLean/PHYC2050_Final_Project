@@ -33,7 +33,7 @@ def main():
     ax.legend()
     ax.grid(alpha=0.25)
     plt.tight_layout()
-    plt.savefig("fig_analysis1_roundabout_baseline.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_analysis1_roundabout_baseline.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

@@ -6,29 +6,43 @@ The car-following model is the Lennard–Jones brake from the project handout: e
 
 `η = (σ / R)^12`,
 
-where `R` is the gap to the obstacle ahead (a leading car or a stop line) and `σ = 15 m`. Time integration is forward-Euler with `dt ∈ [0.01, 0.05] s`.
+where `R` is the gap to the obstacle ahead (a leading car or a stop line) and `σ = 7 m`. Time integration is forward-Euler.
 
 ## Layout
 
 ```
-sim_core.py     1D vehicle, traffic-signal, single-lane simulator
-round_core.py   Polar-coordinate roundabout: ring + four approach/exit arms
-step1_two_cars.py                  two-vehicle following test (stop-and-go)
-step2_pedestrian_light.py          fleet of cars at one pedestrian light
-step3_intersection_lights.py       two perpendicular roads, opposing-phase lights
-step4_roundabout_demo.py           four-arm roundabout snapshot
-analysis1_roundabout_baseline.py             passing-time histogram (Q1)
-analysis2_roundabout_density.py              <t>(spawn rate) on roundabout (Q2)
-analysis3_roundabout_asymmetric.py           heatmap <t>(rate_h, rate_v) (Q3)
-analysis4_roundabout_hv_difference.py        H-V passing-time bias heatmap (Q4)
-analysis5_lights_density_and_cycle.py        light density and cycle sweeps (Q5)
-analysis6_roundabout_vs_lights.py            head-to-head comparison (Q6)
+PHYC2050_TrafficSim/
+├── README.md
+├── report.tex                             full LaTeX report with appendix code listings
+├── code/                                  all source
+│   ├── sim_core.py                        1D vehicle, signal, single-lane simulator
+│   ├── round_core.py                      polar-coordinate roundabout: state-machine
+│   │                                      vehicle (approach/circle/exit/done),
+│   │                                      four-arm support, ring registry, yield rule
+│   ├── step1_two_cars.py                  two-vehicle following test (stop-and-go)
+│   ├── step2_pedestrian_light.py          fleet of cars at one pedestrian light
+│   ├── step3_intersection_lights.py       two perpendicular roads, opposing-phase lights
+│   ├── step4_roundabout_demo.py           four-arm roundabout snapshot
+│   ├── analysis1_roundabout_baseline.py            passing-time histogram (Q1)
+│   ├── analysis2_roundabout_density.py             passing time vs spawn rate, roundabout (Q2)
+│   ├── analysis3_roundabout_asymmetric.py          heatmap <t>(rate_h, rate_v) (Q3)
+│   ├── analysis4_roundabout_hv_difference.py       H-V passing-time bias heatmap (Q4)
+│   ├── analysis5_lights_density_and_cycle.py       lights density and cycle sweeps (Q5)
+│   ├── analysis6_roundabout_vs_lights.py           head-to-head comparison (Q6)
+│   ├── analysis7_lights_asymmetric.py              lights asymmetric heatmap (Q5 follow-up)
+│   ├── analysis8_lights_hv_difference.py           lights H-V bias (Q5 follow-up)
+│   └── analysis9_flow_rate_comparison.py           throughput comparison
+└── figures/                               generated PNGs (committed)
+    ├── fig_step1_two_vehicles.png
+    ├── ...
+    └── fig_analysis9_flow_rate_comparison.png
 ```
 
 ## How to run
 
 ```
 pip install numpy matplotlib
+cd code
 python step1_two_cars.py
 python step2_pedestrian_light.py
 python step3_intersection_lights.py
@@ -39,25 +53,30 @@ python analysis3_roundabout_asymmetric.py
 python analysis4_roundabout_hv_difference.py
 python analysis5_lights_density_and_cycle.py
 python analysis6_roundabout_vs_lights.py
+python analysis7_lights_asymmetric.py
+python analysis8_lights_hv_difference.py
+python analysis9_flow_rate_comparison.py
 ```
 
-Each script prints a small summary table and writes a PNG into the working directory.
+Each script prints a small summary table and saves its figure into `../figures/`.
+
+## Compiling the report
+
+```
+pdflatex report.tex
+pdflatex report.tex   # twice for the table of contents
+```
+
+The `\graphicspath{{figures/}}` directive points to the figures folder, and code listings are included via `\lstinputlisting{code/...}`.
 
 ## Model summary
 
-**Roundabout.** Polar coordinates with ring radius `R = 20 m`. Each arm is `L = 200 m`. Cars are spawned at the far end of an arm with speed 10 m/s. At the stop line (`s = L`) a vehicle may enter the ring only if no other vehicle in the ring lies within an angular distance `π/3` counter-clockwise of the entry point — the "yield-to-the-left" rule for CCW-flowing traffic. Inside the ring vehicles travel at a target tangential speed of 9 m/s (with the same Lennard-Jones car-following), and exit when they reach their target angle, joining a one-lane exit arm. The "horizontal" stream enters at θ = π and exits at θ = 0 (going east); the "vertical" stream enters at θ = 3π/2 and exits at θ = π/2 (going north).
+**Roundabout.** Polar coordinates, ring radius `R = 15 m`, arm length `L = 95 m`, exit length `35 m`. Each vehicle has a state from {approach, circle, exit, done}. A vehicle in the approach state may transition to circle only if no other vehicle in the ring is within angular distance `~ π/3` counter-clockwise of its entry point (yield-to-the-left rule for CCW traffic). Inside the ring vehicles cruise at `5.5 m/s` and follow each other with the same Lennard–Jones interaction in arc-length space. They exit the ring once they have travelled the angular distance to their assigned exit, then continue onto the outgoing arm.
 
-**Traffic light.** Two perpendicular one-lane roads cross at the origin. Each direction has a binary signal (red half the cycle, green half the cycle). The horizontal and vertical signals are 180° out of phase. A red light is treated as a stationary obstacle at the stop line.
+**Traffic light.** Two perpendicular one-lane roads, same arm length as the roundabout. A binary signal at the intersection (red half the cycle, green half the cycle), with horizontal and vertical signals 180° out of phase. A red light is treated as a stationary obstacle at the stop line.
 
-Spawning is a Poisson process with rate `r` cars/s/road, plus a minimum-gap rejection of 25 m at the entry to avoid unphysical pile-ups.
+Spawning is a Poisson process at the road entrance with rate `r` cars/s/road, plus a 10 m minimum-gap rejection to avoid unphysical pile-ups.
 
-## What the analyses answer
+## Headline result
 
-1. Mean roundabout passing time at moderate density.
-2. Roundabout passing time and exit flow as functions of spawn rate.
-3. Asymmetric traffic: the contour `<t>(rate_h, rate_v)` is *not* symmetric — V-cars yield to H-cars in this CCW model, so heavy H-traffic penalises V-traffic but not the reverse.
-4. The H − V passing-time bias as a function of `(rate_h, rate_v)` makes the asymmetry quantitative.
-5. The same density sweep for traffic lights, plus the dependence on cycle period.
-6. Direct comparison of roundabout and lights at matched spawn rates.
-
-`fig_step*.png` and `fig_analysis*.png` files contain the figures.
+In this configuration the traffic light is faster than the roundabout at every density tested. But the roundabout shows a strong direction-dependent bias from the yield-to-the-left rule: vertical-arm cars wait up to ~38 s longer than horizontal-arm cars at heavy load. This is the "Armdale Roundabout bias" the project introduction mentions, made visible.

@@ -33,7 +33,7 @@ def main():
     ax[1].legend()
 
     plt.tight_layout()
-    plt.savefig("fig_analysis2_roundabout_density.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_analysis2_roundabout_density.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

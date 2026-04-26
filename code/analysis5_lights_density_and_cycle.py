@@ -43,7 +43,7 @@ def main():
     ax[1].grid(alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("fig_analysis5_lights_density_and_cycle.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_analysis5_lights_density_and_cycle.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

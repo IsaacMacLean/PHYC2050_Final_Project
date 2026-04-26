@@ -43,7 +43,7 @@ def main():
     ax[1].grid(alpha=0.3, axis="y")
 
     plt.tight_layout()
-    plt.savefig("fig_analysis6_roundabout_vs_lights.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_analysis6_roundabout_vs_lights.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

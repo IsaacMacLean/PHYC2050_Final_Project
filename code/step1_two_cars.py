@@ -47,7 +47,7 @@ def main():
 
     fig.suptitle("Two-vehicle Lennard-Jones car-following test")
     plt.tight_layout()
-    plt.savefig("fig_step1_two_vehicles.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_step1_two_vehicles.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 

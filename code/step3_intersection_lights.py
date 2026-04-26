@@ -118,7 +118,7 @@ def main():
                  f"(t = {t_show:.0f} s, H={'R' if h_red else 'G'}, V={'R' if v_red else 'G'})",
                  fontsize=12)
     plt.tight_layout()
-    plt.savefig("fig_step3_intersection_lights.png", dpi=150, bbox_inches="tight")
+    plt.savefig("../figures/fig_step3_intersection_lights.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
