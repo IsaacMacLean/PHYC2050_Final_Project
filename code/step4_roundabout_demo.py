@@ -52,10 +52,22 @@ def main():
 
     draw_base_roads(ax, radius=radius, extent=extent)
 
+    lane_offset = 2.5
     if snap["cars"]:
-        xs = [c["x"] for c in snap["cars"]]
-        ys = [c["y"] for c in snap["cars"]]
-        cs = [c["color"] for c in snap["cars"]]
+        xs, ys, cs = [], [], []
+        for c in snap["cars"]:
+            x, y = c["x"], c["y"]
+            theta = c.get("theta")
+            if theta is None:
+                theta = math.atan2(y, x)
+            nx, ny = -math.sin(theta), math.cos(theta)
+            if c["state"] == "approach":
+                x += lane_offset * nx
+                y += lane_offset * ny
+            elif c["state"] == "exit":
+                x -= lane_offset * nx
+                y -= lane_offset * ny
+            xs.append(x); ys.append(y); cs.append(c["color"])
         ax.scatter(xs, ys, s=70, c=cs, edgecolor="black", lw=0.6, zorder=10)
 
     handles = []

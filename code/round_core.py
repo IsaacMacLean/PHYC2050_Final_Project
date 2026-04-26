@@ -204,7 +204,10 @@ def _snapshot(cars, t):
             continue
         x = c.r * math.cos(c.theta)
         y = c.r * math.sin(c.theta)
-        items.append({"x": x, "y": y, "color": c.color, "arm": c.arm, "state": c.state})
+        items.append({
+            "x": x, "y": y, "theta": c.theta,
+            "color": c.color, "arm": c.arm, "state": c.state,
+        })
     return {"time": t, "cars": items}
 
 

@@ -69,23 +69,30 @@ def main():
     T = 90.0
     period = 20.0
     n = int(T / dt)
+    lane_off = 6.0
 
     sig_h = Signal(loc=0.0, period=period, offset=0.0)
     sig_v = Signal(loc=0.0, period=period, offset=period / 2)
-    lane_h = Lane(signal=sig_h, entry_s=-200.0, exit_s=200.0)
-    lane_v = Lane(signal=sig_v, entry_s=-200.0, exit_s=200.0)
+    lane_e = Lane(signal=sig_h, entry_s=-200.0, exit_s=200.0)
+    lane_w = Lane(signal=sig_h, entry_s=-200.0, exit_s=200.0)
+    lane_n = Lane(signal=sig_v, entry_s=-200.0, exit_s=200.0)
+    lane_s = Lane(signal=sig_v, entry_s=-200.0, exit_s=200.0)
 
-    snaps_h, snaps_v, ts = [], [], []
+    snaps_e, snaps_w, snaps_n, snaps_s, ts = [], [], [], [], []
     for i in range(n):
         t = i * dt
-        lane_h.try_spawn(t, dt, rate=0.4)
-        lane_v.try_spawn(t, dt, rate=0.4)
-        lane_h.step(t, dt)
-        lane_v.step(t, dt)
+        lane_e.try_spawn(t, dt, rate=0.4)
+        lane_w.try_spawn(t, dt, rate=0.4)
+        lane_n.try_spawn(t, dt, rate=0.4)
+        lane_s.try_spawn(t, dt, rate=0.4)
+        for ln in (lane_e, lane_w, lane_n, lane_s):
+            ln.step(t, dt)
         if i % 30 == 0:
             ts.append(t)
-            snaps_h.append(lane_h.positions)
-            snaps_v.append(lane_v.positions)
+            snaps_e.append(lane_e.positions)
+            snaps_w.append(lane_w.positions)
+            snaps_n.append(lane_n.positions)
+            snaps_s.append(lane_s.positions)
 
     fig, ax = plt.subplots(figsize=(8.5, 8.5))
     ax.set_xlim(-230, 230)
@@ -98,10 +105,14 @@ def main():
 
     snap_idx = -1
     t_show = ts[snap_idx]
-    for x in snaps_h[snap_idx]:
-        car_rect(ax, x, -6, "h", "#1f3a93")
-    for y in snaps_v[snap_idx]:
-        car_rect(ax, 6, y, "v", "#e67e22")
+    for s in snaps_e[snap_idx]:
+        car_rect(ax, s, -lane_off, "h", "#1f3a93")
+    for s in snaps_w[snap_idx]:
+        car_rect(ax, -s, lane_off, "h", "#2e86c1")
+    for s in snaps_n[snap_idx]:
+        car_rect(ax, lane_off, s, "v", "#e67e22")
+    for s in snaps_s[snap_idx]:
+        car_rect(ax, -lane_off, -s, "v", "#d35400")
 
     h_red = sig_h.red(t_show)
     v_red = sig_v.red(t_show)
