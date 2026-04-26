@@ -1,94 +1,63 @@
-# PHYC2050 / MATH2052 -- Traffic at Intersections
+# PHYC 2050 Final Project — Traffic at Intersections
 
-Simulation code for the 2026 PHYC2050 / MATH2052 final project: comparing a
-four-arm **roundabout** against a two-phase **traffic-light** intersection
-(Halifax / Armdale-Roundabout style). Each car is an object that accelerates
-toward a target speed and brakes with an exponential drag term when it gets
-close to another car or to a stop line. Cars enter at the four arms via a
-Poisson process and are removed when they reach the far end of their exit
-road (open boundary / grand-canonical setup, per the project hints).
+Simulation of car flow through a four-arm intersection controlled either by a **roundabout** or by **traffic lights**, written for the PHYC 2050 / MATH 2052 final project (Spring 2026).
 
-## Repo layout
+The car-following model is the Lennard–Jones brake from the project handout: each vehicle accelerates toward a target speed with relaxation time `τ = 2 s` and is decelerated by an interaction `η v` with
+
+`η = (σ / R)^12`,
+
+where `R` is the gap to the obstacle ahead (a leading car or a stop line) and `σ = 15 m`. Time integration is forward-Euler with `dt ∈ [0.01, 0.05] s`.
+
+## Layout
 
 ```
-PHYC2050_TrafficSim/
-├── trafficsim/              importable simulation package
-│   ├── vehicle.py           Vehicle dataclass + geometry helpers
-│   ├── roundabout.py        polar-coordinate roundabout sim
-│   ├── traffic_light.py     two-phase light sim with left-turn lane
-│   ├── _common.py           shared spawn / exit / summary code
-│   ├── analysis.py          repeated-run helper (mean +/- stderr)
-│   └── plotting.py          drawing + animation helpers
-├── scripts/                 numbered runnable analyses
-│   ├── 01_two_car_braking.py
-│   ├── 02_pedestrian_light.py
-│   ├── 03_demo_animations.py
-│   ├── 04_roundabout_volume_sweep.py
-│   ├── 05_asymmetric_traffic_contour.py
-│   ├── 06_roundabout_vs_lights.py
-│   ├── 07_cycle_length_sweep.py
-│   ├── 08_random_destinations.py
-│   ├── 09_radius_sensitivity.py
-│   └── run_all.py
-├── figures/                 saved plots and .mp4 movies (script output)
-├── requirements.txt
-└── README.md
+sim_core.py     1D vehicle, traffic-signal, single-lane simulator
+round_core.py   Polar-coordinate roundabout: ring + four approach/exit arms
+step1_two_cars.py                  two-vehicle following test (stop-and-go)
+step2_pedestrian_light.py          fleet of cars at one pedestrian light
+step3_intersection_lights.py       two perpendicular roads, opposing-phase lights
+step4_roundabout_demo.py           four-arm roundabout snapshot
+analysis1_roundabout_baseline.py             passing-time histogram (Q1)
+analysis2_roundabout_density.py              <t>(spawn rate) on roundabout (Q2)
+analysis3_roundabout_asymmetric.py           heatmap <t>(rate_h, rate_v) (Q3)
+analysis4_roundabout_hv_difference.py        H-V passing-time bias heatmap (Q4)
+analysis5_lights_density_and_cycle.py        light density and cycle sweeps (Q5)
+analysis6_roundabout_vs_lights.py            head-to-head comparison (Q6)
 ```
 
-## Install and run
+## How to run
 
-```bash
-git clone <this repo>
-cd PHYC2050_TrafficSim
-python -m pip install -r requirements.txt
-
-# one analysis at a time
-python scripts/01_two_car_braking.py
-python scripts/04_roundabout_volume_sweep.py
-
-# everything, in order
-python scripts/run_all.py            # full resolution
-python scripts/run_all.py --quick    # fast smoke-test (~1-2 min)
+```
+pip install numpy matplotlib
+python step1_two_cars.py
+python step2_pedestrian_light.py
+python step3_intersection_lights.py
+python step4_roundabout_demo.py
+python analysis1_roundabout_baseline.py
+python analysis2_roundabout_density.py
+python analysis3_roundabout_asymmetric.py
+python analysis4_roundabout_hv_difference.py
+python analysis5_lights_density_and_cycle.py
+python analysis6_roundabout_vs_lights.py
 ```
 
-Saving the demo animations as `.mp4` requires `ffmpeg` on your `PATH`
-(`brew install ffmpeg` on macOS, `apt install ffmpeg` on Debian/Ubuntu).
-The other figures need only `numpy` and `matplotlib`.
+Each script prints a small summary table and writes a PNG into the working directory.
 
-## What each script answers
+## Model summary
 
-| Script | Project question(s) | Output |
-|--------|---------------------|--------|
-| `01_two_car_braking.py` | Hint #3 -- braking sanity check | `fig1_two_car_braking.png` |
-| `02_pedestrian_light.py` | Hint #4 -- single-road pedestrian light | `fig2_pedestrian_light.png` |
-| `03_demo_animations.py` | Hint #10 -- visualizing both intersections | `fig3_example_states.png`, `movie_*.mp4` |
-| `04_roundabout_volume_sweep.py` | Analyses #1, #2 -- passing time vs volume | `fig4_roundabout_volume_sweep.png` |
-| `05_asymmetric_traffic_contour.py` | Analyses #3, #4 -- asymmetric H/V traffic and bias | `fig5...contour.png`, `fig6...directional_bias.png` |
-| `06_roundabout_vs_lights.py` | Analyses #5, #6 -- which intersection wins, when | `fig7...vs_lights.png`, `fig8...difference.png` |
-| `07_cycle_length_sweep.py` | Analysis #5 follow-up -- best traffic-light cycle | `fig9_cycle_length_sweep.png` |
-| `08_random_destinations.py` | Analyses #7, #8 -- random destinations | `fig10_random_destinations.png` |
-| `09_radius_sensitivity.py` | Analysis #9 -- effect of roundabout radius | `fig11_radius_sensitivity.png` |
+**Roundabout.** Polar coordinates with ring radius `R = 20 m`. Each arm is `L = 200 m`. Cars are spawned at the far end of an arm with speed 10 m/s. At the stop line (`s = L`) a vehicle may enter the ring only if no other vehicle in the ring lies within an angular distance `π/3` counter-clockwise of the entry point — the "yield-to-the-left" rule for CCW-flowing traffic. Inside the ring vehicles travel at a target tangential speed of 9 m/s (with the same Lennard-Jones car-following), and exit when they reach their target angle, joining a one-lane exit arm. The "horizontal" stream enters at θ = π and exits at θ = 0 (going east); the "vertical" stream enters at θ = 3π/2 and exits at θ = π/2 (going north).
 
-## Modelling choices (short)
+**Traffic light.** Two perpendicular one-lane roads cross at the origin. Each direction has a binary signal (red half the cycle, green half the cycle). The horizontal and vertical signals are 180° out of phase. A red light is treated as a stationary obstacle at the stop line.
 
-* **Car following.** Each car carries a target speed `vmax` and an exponential
-  brake `a_brake = exp(brake_d / gap) * v` from the project hint. This brakes
-  hard when `gap` is small and basically vanishes at long range, so cars
-  cruise normally on open road and platoon cleanly behind a leader.
-* **Roundabout.** Polar coordinates inside the circle; each entering car has
-  to satisfy a time-gap criterion against every car already on the ring
-  (yields to traffic from the left). Once on the ring it follows arc-length
-  spacing and exits the moment its angle sweeps past the target arm.
-* **Traffic light.** Two-phase, no yellow (per spec). Each arm carries a
-  through lane and a left-turn lane of length equal to the roundabout
-  radius, so left-turners don't block straight-through traffic. A small
-  discharge headway between successive departures captures startup loss.
-* **Open boundary.** Cars are spawned via a Poisson process per arm and
-  deleted once they pass the far end of their exit road. Throughput is
-  measured as completed cars per second after a warm-up period.
-* **Statistics.** Every operating point in the sweeps is run with multiple
-  random seeds and the plots show mean +/- standard error.
+Spawning is a Poisson process with rate `r` cars/s/road, plus a minimum-gap rejection of 25 m at the entry to avoid unphysical pile-ups.
 
-## Authors
+## What the analyses answer
 
-Final project for **PHYC2050 / MATH2052** (Dalhousie University, 2026).
+1. Mean roundabout passing time at moderate density.
+2. Roundabout passing time and exit flow as functions of spawn rate.
+3. Asymmetric traffic: the contour `<t>(rate_h, rate_v)` is *not* symmetric — V-cars yield to H-cars in this CCW model, so heavy H-traffic penalises V-traffic but not the reverse.
+4. The H − V passing-time bias as a function of `(rate_h, rate_v)` makes the asymmetry quantitative.
+5. The same density sweep for traffic lights, plus the dependence on cycle period.
+6. Direct comparison of roundabout and lights at matched spawn rates.
+
+`fig_step*.png` and `fig_analysis*.png` files contain the figures.
