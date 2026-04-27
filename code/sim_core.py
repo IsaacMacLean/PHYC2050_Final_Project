@@ -17,17 +17,10 @@ def lj_brake(sigma, gap, vel):
     return -((sigma / g) ** 12) * vel
 
 
-def integrate(veh, dt, blocker_s, min_gap=20.0):
+def integrate(veh, dt, blocker_s):
     drive = (veh.v_target - veh.vel) / veh.relax
-    if blocker_s is None:
-        brake = 0.0
-        gap = float("inf")
-    else:
-        gap = blocker_s - veh.s
-        brake = lj_brake(veh.sigma, gap, veh.vel)
+    brake = 0.0 if blocker_s is None else lj_brake(veh.sigma, blocker_s - veh.s, veh.vel)
     veh.vel = max(0.0, veh.vel + (drive + brake) * dt)
-    if gap < min_gap:
-        veh.vel = 0.0
     veh.s += veh.vel * dt
 
 
