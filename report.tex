@@ -51,7 +51,7 @@
 \maketitle
 
 \begin{abstract}
-We compare two intersection control schemes -- a four-arm roundabout and a pair of opposing-phase traffic lights -- on identical road geometry, using a custom Python simulation in which each car follows a Lennard-Jones-style braking law and is spawned as a Poisson process at the entrance of an arm. We sweep traffic volume, asymmetric loading, and signal cycle length and measure the mean passing time and the total exit flow rate. In the configuration tested, the traffic light is faster than the roundabout at every density studied, with the gap growing from $\sim 2$~s at very light traffic to roughly $30$--$40$~s at heavy traffic. The roundabout, however, exhibits a striking direction-dependent bias: under one-way traffic on perpendicular arms, vertical-arm cars wait $20$--$40$~s longer than horizontal-arm cars because of the yield-to-the-left rule. This effect is qualitatively the same as the rush-hour bias commonly observed at the Armdale Roundabout in Halifax. The traffic light is essentially fair (anti-symmetric in $H \leftrightarrow V$) and saturates the total exit flow at $\sim 0.7$~cars/s against $\sim 0.19$~cars/s for the roundabout.
+We compare two intersection control schemes -- a four-arm roundabout and a pair of opposing-phase traffic lights -- on identical road geometry, using a custom Python simulation in which each car follows a Lennard-Jones-style braking law and is spawned as a Poisson process at the entrance of an arm. We sweep traffic volume, asymmetric loading, and signal cycle length and measure the mean passing time and the total exit flow rate. In the configuration tested, the traffic light is faster than the roundabout at every density studied, with the gap growing from $\sim 0$~s at very light traffic to roughly $30$~s at heavy traffic. The roundabout, however, exhibits a striking direction-dependent bias: under one-way traffic on perpendicular arms, vertical-arm cars wait $20$--$40$~s longer than horizontal-arm cars because of the yield-to-the-left rule. This effect is qualitatively the same as the rush-hour bias commonly observed at the Armdale Roundabout in Halifax. The traffic light is essentially fair (anti-symmetric in $H \leftrightarrow V$) and saturates the total exit flow at $\sim 0.36$~cars/s against $\sim 0.15$~cars/s for the roundabout.
 \end{abstract}
 
 \tableofcontents
@@ -189,7 +189,7 @@ Figure~\ref{fig:sym_density} shows the mean passing time as a function of spawn 
 
 The cycle-period sweep on the right of Figure~\ref{fig:sym_lights} answers the project's traffic-light follow-up question. At a fixed density of $0.4$~cars/s, the mean passing time is U-shaped in cycle period: it minimises near $T_{\text{cycle}} \approx 15$--$20$~s. Very short cycles (5~s) waste time switching back and forth, so cars never build momentum across the intersection. Very long cycles (60--80~s) trap the queueing direction in long red phases. The optimum reflects the trade-off between switching overhead and queue-buildup overhead.
 
-The headline numerical comparison is in Figure~\ref{fig:headtohead}. Across every density studied, the traffic light beats the roundabout: the gap is small at low density ($\sim 2$~s in favour of the light at $0.05$~cars/s) and grows substantially at moderate density (up to $\sim 38$~s at $0.5$--$0.6$~cars/s). The throughput plot in Figure~\ref{fig:flow} shows the same picture: the lights saturate at $\sim 0.7$~cars/s of total exit flow while the roundabout caps out near $\sim 0.19$~cars/s.
+The headline numerical comparison is in Figure~\ref{fig:headtohead}. Across every density studied, the traffic light beats the roundabout: the gap is small at low density ($\sim 0$~s at $0.05$~cars/s) and grows substantially at moderate density (up to $\sim 33$~s at $0.5$--$0.6$~cars/s). The throughput plot in Figure~\ref{fig:flow} shows the same picture: the lights saturate at $\sim 0.36$~cars/s of total exit flow while the roundabout caps out near $\sim 0.15$~cars/s.
 
 \begin{figure}[H]
     \centering
@@ -251,7 +251,7 @@ Figure~\ref{fig:flow} shows total exit flow as a function of spawn rate, plus th
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.92\textwidth]{fig_analysis9_flow_rate_comparison.png}
-    \caption{Throughput comparison. Left: total exit flow vs.\ spawn rate. The roundabout saturates near $0.19$~cars/s as soon as the V-arm starts to back up; the light continues to grow with spawn rate up to $\sim 0.7$~cars/s. Right: efficiency (exit flow divided by $2 \times$ spawn rate). Both schemes track $100$~\% efficiency at low load; the roundabout breaks down rapidly above $r \approx 0.15$, while the lights remain $> 40$~\% efficient even at $0.6$~cars/s.}
+    \caption{Throughput comparison. Left: total exit flow vs.\ spawn rate. The roundabout saturates near $0.15$~cars/s as soon as the V-arm starts to back up; the light continues to grow with spawn rate up to $\sim 0.36$~cars/s. Right: efficiency (exit flow divided by $2 \times$ spawn rate). Both schemes track $100$~\% efficiency at low load; the roundabout breaks down rapidly above $r \approx 0.10$, while the lights remain $> 30$~\% efficient even at $0.6$~cars/s.}
     \label{fig:flow}
 \end{figure}
 
@@ -282,7 +282,7 @@ Table~\ref{tab:comparison} summarises the qualitative behaviour we observed acro
 \textbf{Condition} & \textbf{Roundabout} & \textbf{Traffic Light} \\ \hline
 Symmetric, light & Smooth flow, mean $\sim 20$~s. & Slightly faster, mean $\sim 18$~s. \\ \hline
 Symmetric, medium & Mean climbs to $\sim 38$~s at $r=0.3$, $\sim 51$~s at $r=0.4$. V-arm starts queueing. & Mean grows gently to $\sim 19$--$21$~s. Cycle period of $15$--$20$~s is optimal. \\ \hline
-Symmetric, heavy & Saturated entry flow $\sim 0.19$~cars/s; cars back up onto the arms. & Saturated entry flow $\sim 0.7$~cars/s; remains the higher-throughput option. \\ \hline
+Symmetric, heavy & Saturated entry flow $\sim 0.15$~cars/s; cars back up onto the arms. & Saturated entry flow $\sim 0.36$~cars/s; remains the higher-throughput option. \\ \hline
 Asymmetric, light & Small bias visible -- V cars wait $\sim 2$--$5$~s longer than H cars. & Approximately fair; bias smaller than $\sim 1$~s. \\ \hline
 Asymmetric, medium & Strong bias -- V cars wait $20$--$30$~s longer; the lighter direction is starved. & Almost fair; bias is anti-symmetric along the diagonal. \\ \hline
 Asymmetric, heavy & Severe bias -- V cars wait up to $\sim 38$~s longer; throughput collapses on the V arm. & Modestly biased ($\le 10$~s) toward whichever direction has lower demand; throughput remains high. \\ \hline

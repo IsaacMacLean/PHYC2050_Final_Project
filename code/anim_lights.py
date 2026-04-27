@@ -10,15 +10,15 @@ from step3_intersection_lights import draw_intersection
 def main():
     random.seed(7)
     dt = 0.05
-    T = 80.0
-    period = 20.0
+    T = 160.0
+    period = 40.0
     n = int(T / dt)
-    lane_off = 6.0
+    lane_off = 8.0
     record_every = 4
-    spawn_rate = 0.25
+    spawn_rate = 0.22
 
-    sig_h = Signal(loc=0.0, period=period, offset=0.0)
-    sig_v = Signal(loc=0.0, period=period, offset=period / 2)
+    sig_h = Signal(loc=-12.0, period=period, offset=0.0)
+    sig_v = Signal(loc=-12.0, period=period, offset=period / 2)
     lane_e = Lane(signal=sig_h, entry_s=-200.0, exit_s=200.0)
     lane_w = Lane(signal=sig_h, entry_s=-200.0, exit_s=200.0)
     lane_n = Lane(signal=sig_v, entry_s=-200.0, exit_s=200.0)
@@ -48,26 +48,28 @@ def main():
     ax.set_xticks([]); ax.set_yticks([])
     draw_intersection(ax)
 
-    sc_e = ax.scatter([], [], marker="s", s=180, c="#1f3a93",
-                      edgecolor="black", lw=0.6, zorder=4)
-    sc_w = ax.scatter([], [], marker="s", s=180, c="#2e86c1",
-                      edgecolor="black", lw=0.6, zorder=4)
-    sc_n = ax.scatter([], [], marker="s", s=180, c="#e67e22",
-                      edgecolor="black", lw=0.6, zorder=4)
-    sc_s = ax.scatter([], [], marker="s", s=180, c="#d35400",
-                      edgecolor="black", lw=0.6, zorder=4)
+    sc_e = ax.scatter([], [], marker="s", s=70, c="#1f3a93",
+                      edgecolor="black", lw=0.5, zorder=4)
+    sc_w = ax.scatter([], [], marker="s", s=70, c="#2e86c1",
+                      edgecolor="black", lw=0.5, zorder=4)
+    sc_n = ax.scatter([], [], marker="s", s=70, c="#e67e22",
+                      edgecolor="black", lw=0.5, zorder=4)
+    sc_s = ax.scatter([], [], marker="s", s=70, c="#d35400",
+                      edgecolor="black", lw=0.5, zorder=4)
 
     from matplotlib.patches import Rectangle, Circle
-    sig_box = Rectangle((-22, -22), 44, 44, facecolor="#222",
-                        edgecolor="black", lw=1.2, zorder=5)
+    sig_box = Rectangle((-15, -10), 30, 20, facecolor="#1c1c1c",
+                        edgecolor="black", lw=1.4, zorder=5)
     ax.add_patch(sig_box)
-    h_circ = Circle((-10, 0), 6, facecolor="#e74c3c",
+    h_circ = Circle((-7.5, 1.5), 4.2, facecolor="#e74c3c",
                     edgecolor="black", lw=0.8, zorder=6)
-    v_circ = Circle((10, 0), 6, facecolor="#2ecc71",
+    v_circ = Circle((7.5, 1.5), 4.2, facecolor="#2ecc71",
                     edgecolor="black", lw=0.8, zorder=6)
     ax.add_patch(h_circ); ax.add_patch(v_circ)
-    ax.text(-10, -16, "H", color="white", ha="center", fontsize=8, zorder=6)
-    ax.text(10, -16, "V", color="white", ha="center", fontsize=8, zorder=6)
+    ax.text(-7.5, -6.5, "H", color="white", ha="center",
+            fontsize=11, fontweight="bold", zorder=6)
+    ax.text(7.5, -6.5, "V", color="white", ha="center",
+            fontsize=11, fontweight="bold", zorder=6)
 
     title = ax.text(0.5, 0.97, "", transform=ax.transAxes,
                     ha="center", va="top", fontsize=12,
